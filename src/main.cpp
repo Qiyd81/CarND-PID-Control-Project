@@ -37,6 +37,7 @@ int main() {
   /**
    * TODO: Initialize the pid variable.
    */
+  pid.Init(0.30, 0.0, 2.5);
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                      uWS::OpCode opCode) {
@@ -63,10 +64,46 @@ int main() {
            * NOTE: Feel free to play around with the throttle and speed.
            *   Maybe use another PID controller to control the speed!
            */
+//          pid.UpdateError(cte);
+//          steer_value = pid.error;
+          if (pid.count % (pid.n_opt + pid.n_acu) <= pid.n_opt) {
+            pid.UpdateError(cte);
+            steer_value = pid.error;
+          }
+          else if (pid.count % (pid.n_opt + pid.n_acu) > pid.n_opt) {
+            pid.UpdateError(cte);
+            steer_value = pid.error;
+            pid.TotalError(cte);
+            std::cout<<"total error before twiddle ="<<pid.totalError<<std::endl;
+          }
+          if ((pid.count % (pid.n_opt + pid.n_acu) == 0) && pid.count != 0) {
+            pid.Twiddle();
+            pid.totalError = 0;
+            std::cout<<"pid.count ="<<pid.count<<std::endl;
+            std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Kd ="<<pid.Kd<<"\t"<<"Ki ="<<pid.Ki<<std::endl;
+            std::cout<<"p[0] ="<<pid.p[0]<<"\t"<<"p[1] ="<<pid.p[1]<<"\t"<<"p[2] ="<<pid.p[2]<<std::endl;
+            
+            // DEBUG
+            std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+          }
           
-          // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value 
-                    << std::endl;
+//          std::cout<<"pid.count ="<<pid.count<<std::endl;
+//          std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Kd ="<<pid.Kd<<"\t"<<"Ki ="<<pid.Ki<<std::endl;
+//
+//
+//          // DEBUG
+//          std::cout << "CTE: " << cte << " Steering Value: " << steer_value
+//                    << std::endl;
+          
+//          //Do conditional throttling based on cte
+//          double throttle = 0.30;
+//
+//          if (fabs(cte) > 3.0) {
+//            throttle = 0.05;
+//          }
+//          else if (fabs(cte) > 1.5) {
+//            throttle = 0.10;
+//          }
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
