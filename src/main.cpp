@@ -66,6 +66,7 @@ int main() {
            */
 //          pid.UpdateError(cte);
 //          steer_value = pid.error;
+
           if (pid.count % (pid.n_opt + pid.n_acu) <= pid.n_opt) {
             pid.UpdateError(cte);
             steer_value = pid.error;
@@ -74,17 +75,25 @@ int main() {
             pid.UpdateError(cte);
             steer_value = pid.error;
             pid.TotalError(cte);
-            std::cout<<"total error before twiddle ="<<pid.totalError<<std::endl;
+//            std::cout<<"total error before twiddle ="<<pid.totalError<<std::endl;
           }
           if ((pid.count % (pid.n_opt + pid.n_acu) == 0) && pid.count != 0) {
             pid.Twiddle();
+            pid.Kp = pid.p[0];
+            pid.Ki = pid.p[1];
+            pid.Kd = pid.p[2];
+            std::cout<<"pid.best_err ="<<pid.best_err<<std::endl;
+            std::cout<<"total at twiddle ="<<pid.totalError<<std::endl;
             pid.totalError = 0;
+            std::cout<<"total after twiddle ="<<pid.totalError<<std::endl;
+
             std::cout<<"pid.count ="<<pid.count<<std::endl;
-            std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Kd ="<<pid.Kd<<"\t"<<"Ki ="<<pid.Ki<<std::endl;
+            std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Ki ="<<pid.Ki<<"\t"<<"Kd ="<<pid.Kd<<std::endl;
             std::cout<<"p[0] ="<<pid.p[0]<<"\t"<<"p[1] ="<<pid.p[1]<<"\t"<<"p[2] ="<<pid.p[2]<<std::endl;
+            std::cout<<"dp[0] ="<<pid.dp[0]<<"\t"<<"dp[1] ="<<pid.dp[1]<<"\t"<<"dp[2] ="<<pid.dp[2]<<std::endl;
             
             // DEBUG
-            std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+//            std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
           }
           
 //          std::cout<<"pid.count ="<<pid.count<<std::endl;
@@ -109,7 +118,7 @@ int main() {
           msgJson["steering_angle"] = steer_value;
           msgJson["throttle"] = 0.3;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
-          std::cout << msg << std::endl;
+//          std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }  // end "telemetry" if
       } else {

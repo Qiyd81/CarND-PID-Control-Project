@@ -17,7 +17,14 @@ void PID::Init(double Kp_, double Ki_, double Kd_) {
   Kd = Kd_;
 //  tol = 0.2;
   
-  dp.assign(3, 0.2);
+  p.push_back(Kp);
+  p.push_back(Ki);
+  p.push_back(Kd);
+  
+  dp.push_back(0.01*Kp + 0.000001);
+  dp.push_back(0.01*Ki + 0.000000001);
+  dp.push_back(0.01*Kd + 0.000001);
+//  dp.assign(3, 0.01);
   
   p_error = 0;
   i_error = 0;
@@ -70,41 +77,45 @@ double PID::TotalError(double cte) {
 }
 
 void PID::Twiddle() {
-
-  p.push_back(Kp);
-  p.push_back(Kd);
-  p.push_back(Ki);
   
 //  dp.push_back(0.1*Kp+0.001);
 //  dp.push_back(0.1*Kd+0.001);
 //  dp.push_back(0.1*Ki+0.001);
-  
-  while (accumulate(dp.begin(), dp.end(),0) > tol) {
-    for(int i = 0; i < 3; ++i) {
-      p[i] += dp[i];
-      double err = totalError;
-      
-      if (err < best_err) {
-        best_err = err;
-        dp[i] *= 1.1;
+  std::cout<<"twiddle starts:"<<std::endl;
+  if (accumulate(dp.begin(), dp.end(),0.0) > tol) {
+    
+    int i = count / (n_opt + n_acu) - 1;
+    int j = i % 3;
+    p[j] += dp[j];
+//    for(j = 0; j < 3; ++j) {
+//      p[j] += dp[j];
+//      double err = totalError;
+    temp_error = totalError;
+    std::cout<<"temp_error ="<<temp_error<<std::endl;
+    
+    if (temp_error < best_err) {
+      best_err = temp_error;
+      dp[j] *= 1.1;
+    }
+
+    else {
+      p[j] -= 2 * dp[j];
+      temp_error = totalError;
+      if (temp_error < best_err) {
+        best_err = temp_error;
+        dp[j] *= 1.1;
       }
       else {
-        p[i] -= 2* dp[i];
-        err = totalError;
-        if (err < best_err) {
-          best_err = err;
-          dp[i] *= 1.1;
-        }
-        else {
-          p[i] += dp[i];
-          dp[i] *= 0.9;
-        }
+        p[j] += dp[j];
+        dp[j] *= 0.9;
       }
     }
-    Kp = p[0];
-    Kd = p[1];
-    Ki = p[2];
-//    return p, best_err;
+    std::cout<<"p["<<j<<"] ="<<p[j]<<std::endl;
+    std::cout<<"dp["<<j<<"] ="<<dp[j]<<std::endl;
   }
+//    Kp = p[0];
+//    Kd = p[1];
+//    Ki = p[2];
+//    return p;
   
 }

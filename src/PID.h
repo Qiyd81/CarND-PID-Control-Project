@@ -17,9 +17,10 @@ class PID {
   const double tol = 0.02;
   double totalError;
   double best_err;
+  double temp_error;
   
   const int n_opt = 100;
-  const int n_acu = 300;
+  const int n_acu = 10000;
   
   std::vector<double> p;
   std::vector<double> dp;
