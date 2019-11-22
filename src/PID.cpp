@@ -21,9 +21,9 @@ void PID::Init(double Kp_, double Ki_, double Kd_) {
   p.push_back(Ki);
   p.push_back(Kd);
   
-  dp.push_back(0.01*Kp + 0.000001);
-  dp.push_back(0.01*Ki + 0.000000001);
-  dp.push_back(0.01*Kd + 0.000001);
+  dp.push_back(0.01);
+  dp.push_back(0.000000001);
+  dp.push_back(0.01);
 //  dp.assign(3, 0.01);
   
   p_error = 0;
@@ -36,6 +36,8 @@ void PID::Init(double Kp_, double Ki_, double Kd_) {
   intg_cte = 0;
   
   count = 0;
+  
+  val_i = 0;
   
   totalError = 0;
   best_err = std::numeric_limits<double>::max();
@@ -76,7 +78,7 @@ double PID::TotalError(double cte) {
   return totalError;  // TODO: Add your total error calc here!
 }
 
-void PID::Twiddle() {
+void PID::Twiddle(int j) {
   
 //  dp.push_back(0.1*Kp+0.001);
 //  dp.push_back(0.1*Kd+0.001);
@@ -84,32 +86,48 @@ void PID::Twiddle() {
   std::cout<<"twiddle starts:"<<std::endl;
   if (accumulate(dp.begin(), dp.end(),0.0) > tol) {
     
-    int i = count / (n_opt + n_acu) - 1;
-    int j = i % 3;
-    p[j] += dp[j];
+//    int i = count / (n_opt + n_acu) - 1;
+//    int j = i % 3;
+
+//    p[j] += dp[j];
 //    for(j = 0; j < 3; ++j) {
 //      p[j] += dp[j];
 //      double err = totalError;
-    temp_error = totalError;
-    std::cout<<"temp_error ="<<temp_error<<std::endl;
-    
-    if (temp_error < best_err) {
-      best_err = temp_error;
+//    temp_error = totalError;
+    std::cout<<"totalError ="<<totalError<<std::endl;
+    if (totalError < best_err) {
+      best_err = totalError;
+      p[j] += dp[j];
       dp[j] *= 1.1;
+      val_i = 0;
     }
-
+    else if (val_i == 0) {
+      p[j] -= 2 * (dp[j]/1.1);
+      dp[j] /= 1.1;
+      val_i = 1;
+    }
     else {
-      p[j] -= 2 * dp[j];
-      temp_error = totalError;
-      if (temp_error < best_err) {
-        best_err = temp_error;
-        dp[j] *= 1.1;
-      }
-      else {
-        p[j] += dp[j];
-        dp[j] *= 0.9;
-      }
+      p[j] += dp[j];
+      dp[j] *= 0.9;
+      val_i = 0;
     }
+//    if (temp_error < best_err) {
+//      best_err = temp_error;
+//      dp[j] *= 1.1;
+//    }
+//
+//    else {
+//      p[j] -= 2 * dp[j];
+//      temp_error = totalError;
+//      if (temp_error < best_err) {
+//        best_err = temp_error;
+//        dp[j] *= 1.1;
+//      }
+//      else {
+//        p[j] += dp[j];
+//        dp[j] *= 0.9;
+//      }
+//    }
     std::cout<<"p["<<j<<"] ="<<p[j]<<std::endl;
     std::cout<<"dp["<<j<<"] ="<<dp[j]<<std::endl;
   }

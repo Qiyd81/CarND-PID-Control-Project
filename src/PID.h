@@ -14,13 +14,14 @@ class PID {
   
   int count;
   double error;
-  const double tol = 0.02;
+  const double tol = 0.01;
   double totalError;
   double best_err;
   double temp_error;
   
   const int n_opt = 100;
-  const int n_acu = 10000;
+  const int n_acu = 9700;
+  int val_i;
   
   std::vector<double> p;
   std::vector<double> dp;
@@ -54,7 +55,7 @@ class PID {
    */
   double TotalError(double cte);
   
-  void Twiddle();
+  void Twiddle(int j);
 
  private:
   /**
