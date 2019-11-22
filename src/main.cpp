@@ -38,7 +38,7 @@ int main() {
   /**
    * TODO: Initialize the pid variable.
    */
-  pid.Init(0.321039, 8.2e-10, 2.54478);
+  pid.Init(0.275291, 1.98e-9, 2.52578);
  
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, 
                      uWS::OpCode opCode) {
@@ -67,69 +67,69 @@ int main() {
            */
 //          Twiddle(pid, cte, &steer_value);
 //          std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Ki ="<<pid.Ki<<"\t"<<"Kd ="<<pid.Kd<<std::endl;
-//          pid.UpdateError(cte);
-//          steer_value = pid.error;
+          pid.UpdateError(cte);
+          steer_value = pid.error;
 
           
-          if (pid.count % (pid.n_opt + pid.n_acu) <= pid.n_opt) {
-            pid.UpdateError(cte);
-            steer_value = pid.error;
-          }
-          else if (pid.count % (pid.n_opt + pid.n_acu) > pid.n_opt) {
-            pid.UpdateError(cte);
-            steer_value = pid.error;
-            pid.TotalError(cte);
-//            std::cout<<"total error before twiddle ="<<pid.totalError<<std::endl;
-          }
-          if ((pid.count % (pid.n_opt + pid.n_acu) == 0) && pid.count != 0) {
-            int m = pid.count/(pid.n_opt + pid.n_acu);
-            if (m < 10) {
-              pid.Twiddle(0);
-              pid.Kp = pid.p[0];
-              
-              std::cout<<"pid.best_err ="<<pid.best_err<<std::endl;
-              std::cout<<"total at twiddle ="<<pid.totalError<<std::endl;
-              pid.totalError = 0;
-              std::cout<<"total after twiddle ="<<pid.totalError<<std::endl;
-
-              std::cout<<"pid.count ="<<pid.count<<std::endl;
-              std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Ki ="<<pid.Ki<<"\t"<<"Kd ="<<pid.Kd<<std::endl;
-              std::cout<<"p[0] ="<<pid.p[0]<<"\t"<<"p[1] ="<<pid.p[1]<<"\t"<<"p[2] ="<<pid.p[2]<<std::endl;
-              std::cout<<"dp[0] ="<<pid.dp[0]<<"\t"<<"dp[1] ="<<pid.dp[1]<<"\t"<<"dp[2] ="<<pid.dp[2]<<std::endl;
-              std::cout<<"m ="<<m<<std::endl;
-          }
-            else if (m >= 10 && m < 20) {
-              pid.Twiddle(1);
-              pid.Ki = pid.p[1];
-              
-              std::cout<<"pid.best_err ="<<pid.best_err<<std::endl;
-              std::cout<<"total at twiddle ="<<pid.totalError<<std::endl;
-              pid.totalError = 0;
-              std::cout<<"total after twiddle ="<<pid.totalError<<std::endl;
-
-              std::cout<<"pid.count ="<<pid.count<<std::endl;
-              std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Ki ="<<pid.Ki<<"\t"<<"Kd ="<<pid.Kd<<std::endl;
-              std::cout<<"p[0] ="<<pid.p[0]<<"\t"<<"p[1] ="<<pid.p[1]<<"\t"<<"p[2] ="<<pid.p[2]<<std::endl;
-              std::cout<<"dp[0] ="<<pid.dp[0]<<"\t"<<"dp[1] ="<<pid.dp[1]<<"\t"<<"dp[2] ="<<pid.dp[2]<<std::endl;
-              std::cout<<"m ="<<m<<std::endl;
-            }
-            else if (m >= 20 && m < 30) {
-              pid.Twiddle(2);
-              pid.Kd = pid.p[2];
-              
-              std::cout<<"pid.best_err ="<<pid.best_err<<std::endl;
-              std::cout<<"total at twiddle ="<<pid.totalError<<std::endl;
-              pid.totalError = 0;
-              std::cout<<"total after twiddle ="<<pid.totalError<<std::endl;
-
-              std::cout<<"pid.count ="<<pid.count<<std::endl;
-              std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Ki ="<<pid.Ki<<"\t"<<"Kd ="<<pid.Kd<<std::endl;
-              std::cout<<"p[0] ="<<pid.p[0]<<"\t"<<"p[1] ="<<pid.p[1]<<"\t"<<"p[2] ="<<pid.p[2]<<std::endl;
-              std::cout<<"dp[0] ="<<pid.dp[0]<<"\t"<<"dp[1] ="<<pid.dp[1]<<"\t"<<"dp[2] ="<<pid.dp[2]<<std::endl;
-              std::cout<<"m ="<<m<<std::endl;
-            }
-          }
-
+//          if (pid.count % (pid.n_opt + pid.n_acu) <= pid.n_opt) {
+//            pid.UpdateError(cte);
+//            steer_value = pid.error;
+//          }
+//          else if (pid.count % (pid.n_opt + pid.n_acu) > pid.n_opt) {
+//            pid.UpdateError(cte);
+//            steer_value = pid.error;
+//            pid.TotalError(cte);
+////            std::cout<<"total error before twiddle ="<<pid.totalError<<std::endl;
+//          }
+//          if ((pid.count % (pid.n_opt + pid.n_acu) == 0) && pid.count != 0) {
+//            int m = pid.count/(pid.n_opt + pid.n_acu);
+//            if (m < 10) {
+//              pid.Twiddle(0);
+//              pid.Kp = pid.p[0];
+//              
+//              std::cout<<"pid.best_err ="<<pid.best_err<<std::endl;
+//              std::cout<<"total at twiddle ="<<pid.totalError<<std::endl;
+//              pid.totalError = 0;
+//              std::cout<<"total after twiddle ="<<pid.totalError<<std::endl;
+//
+//              std::cout<<"pid.count ="<<pid.count<<std::endl;
+//              std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Ki ="<<pid.Ki<<"\t"<<"Kd ="<<pid.Kd<<std::endl;
+//              std::cout<<"p[0] ="<<pid.p[0]<<"\t"<<"p[1] ="<<pid.p[1]<<"\t"<<"p[2] ="<<pid.p[2]<<std::endl;
+//              std::cout<<"dp[0] ="<<pid.dp[0]<<"\t"<<"dp[1] ="<<pid.dp[1]<<"\t"<<"dp[2] ="<<pid.dp[2]<<std::endl;
+//              std::cout<<"m ="<<m<<std::endl;
+//          }
+//            else if (m >= 10 && m < 20) {
+//              pid.Twiddle(1);
+//              pid.Ki = pid.p[1];
+//              
+//              std::cout<<"pid.best_err ="<<pid.best_err<<std::endl;
+//              std::cout<<"total at twiddle ="<<pid.totalError<<std::endl;
+//              pid.totalError = 0;
+//              std::cout<<"total after twiddle ="<<pid.totalError<<std::endl;
+//
+//              std::cout<<"pid.count ="<<pid.count<<std::endl;
+//              std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Ki ="<<pid.Ki<<"\t"<<"Kd ="<<pid.Kd<<std::endl;
+//              std::cout<<"p[0] ="<<pid.p[0]<<"\t"<<"p[1] ="<<pid.p[1]<<"\t"<<"p[2] ="<<pid.p[2]<<std::endl;
+//              std::cout<<"dp[0] ="<<pid.dp[0]<<"\t"<<"dp[1] ="<<pid.dp[1]<<"\t"<<"dp[2] ="<<pid.dp[2]<<std::endl;
+//              std::cout<<"m ="<<m<<std::endl;
+//            }
+//            else if (m >= 20 && m < 30) {
+//              pid.Twiddle(2);
+//              pid.Kd = pid.p[2];
+//              
+//              std::cout<<"pid.best_err ="<<pid.best_err<<std::endl;
+//              std::cout<<"total at twiddle ="<<pid.totalError<<std::endl;
+//              pid.totalError = 0;
+//              std::cout<<"total after twiddle ="<<pid.totalError<<std::endl;
+//
+//              std::cout<<"pid.count ="<<pid.count<<std::endl;
+//              std::cout<<"Kp ="<<pid.Kp<<"\t"<<"Ki ="<<pid.Ki<<"\t"<<"Kd ="<<pid.Kd<<std::endl;
+//              std::cout<<"p[0] ="<<pid.p[0]<<"\t"<<"p[1] ="<<pid.p[1]<<"\t"<<"p[2] ="<<pid.p[2]<<std::endl;
+//              std::cout<<"dp[0] ="<<pid.dp[0]<<"\t"<<"dp[1] ="<<pid.dp[1]<<"\t"<<"dp[2] ="<<pid.dp[2]<<std::endl;
+//              std::cout<<"m ="<<m<<std::endl;
+//            }
+//          }
+//
 
             
             // DEBUG
